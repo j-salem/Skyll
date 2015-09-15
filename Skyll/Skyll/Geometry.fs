@@ -55,3 +55,28 @@ type Vec3D(x : float, y : float, z : float) =
     override this.ToString() = 
         "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + "}"
 
+type Point2D(x : float, y : float) =
+    member this.X = x
+    member this.Y = y
+    member this.Move(a : Vec2D) =
+        Point2D(this.X + a.X, this.Y + a.Y)
+    member this.VectorFrom(a : Point2D) = 
+        Vec2D(this.X - a.X, this.Y - a.Y)
+    member this.VectorTo(a : Point2D) =
+        Vec2D(a.X - this.X, a.Y - this.Y)
+    override this.ToString() =
+        "{" + this.X.ToString() + ", " + this.Y.ToString() + "}"
+
+type Point3D(x : float, y : float, z : float) =
+    member this.X = x
+    member this.Y = y
+    member this.Z = z
+    member this.Move(a : Vec3D) =
+        Point3D(this.X + a.X, this.Y + a.Y, this.Z + a.Z)
+    member this.VectorFrom(a : Point3D) = 
+        Vec3D(this.X - a.X, this.Y - a.Y, this.Z - a.Z)
+    member this.VectorTo(a : Point3D) =
+        Vec3D(a.X - this.X, a.Y - this.Y, a.Z - this.Z)
+    override this.ToString() =
+        "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + "}"
+
