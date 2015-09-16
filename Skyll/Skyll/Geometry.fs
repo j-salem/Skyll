@@ -1,9 +1,10 @@
 ﻿module Geometry
 
-type Vec2D (x : float, y : float) =
+type Vec2D (x0 : float, y0 : float) =
+    let mutable x, y = x0, y0
     let mag = sqrt(x * x + y * y)
-    member this.X = x
-    member this.Y = y
+    member this.X with get() = x and set xVal = x <- xVal
+    member this.Y with get() = y and set yVal = y <- yVal
     member this.Magnitude = mag
     member this.Scale(s) =
         Vec2D(x * s, y * s)
@@ -24,7 +25,8 @@ type Vec2D (x : float, y : float) =
     override this.ToString() = 
         "{" + this.X.ToString() + ", " + this.Y.ToString() + "}"
 
-type Vec3D(x : float, y : float, z : float) =
+type Vec3D(x0 : float, y0 : float, z0 : float) =
+    let mutable x, y, z = x0, y0, z0
     let mag = sqrt(x * x + y * y + z * z)
     member this.X = x
     member this.Y = y
@@ -55,9 +57,10 @@ type Vec3D(x : float, y : float, z : float) =
     override this.ToString() = 
         "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + "}"
 
-type Point2D(x : float, y : float) =
-    member this.X = x
-    member this.Y = y
+type Point2D(x0 : float, y0 : float) =
+    let mutable x, y = x0, y0
+    member this.X with get() = x and set xVal = x <- xVal
+    member this.Y with get() = y and set yVal = y <- yVal
     member this.Move(a : Vec2D) =
         Point2D(this.X + a.X, this.Y + a.Y)
     member this.VectorFrom(a : Point2D) = 
@@ -67,10 +70,11 @@ type Point2D(x : float, y : float) =
     override this.ToString() =
         "{" + this.X.ToString() + ", " + this.Y.ToString() + "}"
 
-type Point3D(x : float, y : float, z : float) =
-    member this.X = x
-    member this.Y = y
-    member this.Z = z
+type Point3D(x0 : float, y0 : float, z0 : float) =
+    let mutable x, y, z = x0, y0, z0
+    member this.X with get() = x and set xVal = x <- xVal
+    member this.Y with get() = y and set yVal = y <- yVal
+    member this.Z with get() = z and set zVal = z <- zVal
     member this.Move(a : Vec3D) =
         Point3D(this.X + a.X, this.Y + a.Y, this.Z + a.Z)
     member this.VectorFrom(a : Point3D) = 
@@ -80,3 +84,25 @@ type Point3D(x : float, y : float, z : float) =
     override this.ToString() =
         "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + "}"
 
+// TODO: abstract a little further and add a List<Vec2D> for storing all the vertices of the shape
+[<AbstractClass>]
+type Shape2D(x0 : float, y0 : float) =
+    let mutable center = Point2D(x0, y0)
+    let mutable rot = 0.0 // in rads (maybe add method for deg)
+
+    // eventually replace with a transform component
+    member this.Center with get() = center and set newCenter = center <- newCenter
+    member this.Rot with get() = rot and set rotVal = rot <- rotVal
+    
+    abstract Area : float with get
+    abstract Perimeter : float with get
+    abstract Name : string with get
+
+    member this.Move(a : Vec2D) =
+        center.Move(a)
+
+    abstract member Rotate : float -> unit
+    default this.Rotate angle = rot <- rot + angle
+
+    abstract member Draw : unit 
+    default this.Draw = ()
