@@ -17,7 +17,8 @@ type Game() =
     /// <summary>Creates a 800x600 window with the specified title.</summary>
     inherit GameWindow(800, 600, GraphicsMode.Default, "F# OpenTK Sample")
      
-    let mutable v = Vec3D(-1.0, -1.0, 4.0)
+    let mutable v = Vec3D(0.0, 0.0, 4.0)
+    let mutable square = Square(0.0,0.0)
     do base.VSync <- VSyncMode.On
 
     /// <summary>Load resources here.</summary>
@@ -55,6 +56,7 @@ type Game() =
        let input = Vec3D(left + right, up + down, 0.0).Scale(0.1)
        if base.Keyboard.[Key.Escape] then base.Close()
        v <- v + input
+       square.Center <- Point2D(v.X,v.Y)
 
     /// <summary>
     /// Called when it is time to render the next frame. Add your rendering code here.
@@ -66,12 +68,12 @@ type Game() =
        let mutable modelview = Matrix4.LookAt(Vector3.Zero, Vector3.UnitZ, Vector3.UnitY)
        GL.MatrixMode(MatrixMode.Modelview)
        GL.LoadMatrix(&modelview)
-
-       GL.Begin(BeginMode.Triangles)
-       GL.Color3(1.f, 1.f, 0.f); GL.Vertex3(v.X, v.Y, v.Z)
-       GL.Color3(1.f, 0.f, 0.f); GL.Vertex3(1.f, -1.f, 4.f)
-       GL.Color3(0.2f, 0.9f, 1.f); GL.Vertex3(0.f, 1.f, 4.f)
-       GL.End()
+       square.Draw()
+//       GL.Begin(BeginMode.Triangles)
+//       GL.Color3(1.f, 1.f, 0.f); GL.Vertex3(v.X, v.Y, v.Z)
+//       GL.Color3(1.f, 0.f, 0.f); GL.Vertex3(1.f, -1.f, 4.f)
+//       GL.Color3(0.2f, 0.9f, 1.f); GL.Vertex3(0.f, 1.f, 4.f)
+//       GL.End()
 
        base.SwapBuffers()
 
