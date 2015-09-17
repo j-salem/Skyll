@@ -57,7 +57,7 @@ type Game() =
        let input = Vec3D(left + right, up + down, 0.0).Scale(0.1)
        if base.Keyboard.[Key.Escape] then base.Close()
        v <- v + input
-       square.Center <- Point2D(v.X,v.Y)
+       square.Center <- Vec2D(v.X,v.Y)
 
     /// <summary>
     /// Called when it is time to render the next frame. Add your rendering code here.

@@ -55,7 +55,7 @@ type Transform() =
 // TODO: abstract a little further and add a List<Vec2D> for storing all the vertices of the shape
 [<AbstractClass>]
 type Shape2D(x0 : float, y0 : float) =
-    let mutable center = Point2D(x0, y0)
+    let mutable center = Vec2D(x0, y0)
     let mutable rot = 0.0 // in rads (maybe add method for deg)
 
     // eventually replace with a transform component
@@ -67,7 +67,7 @@ type Shape2D(x0 : float, y0 : float) =
     abstract Name : string with get
 
     member this.Move(a : Vec2D) =
-        center.Move(a)
+        center <- center + a
 
     abstract member Rotate : float -> unit
     default this.Rotate angle = rot <- rot + angle
