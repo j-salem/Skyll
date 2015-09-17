@@ -32,32 +32,23 @@ type Transform() =
         with get() = scaling
 
     member this.Translate(x : float, y : float, z : float) =
-        // TODO
-        ()
+        position <- position + Vec3D(x,y,z)
     member this.Translate(v : Vec3D) =
-        // TODO
-        ()
+        position <- position + v
     member this.SetPosition(p : Vec3D) =
-        // TODO
-        ()
+        position <- p
     member this.Rotate(x : float, y : float, z : float) =
-        // TODO
-        ()
+        rotation <- rotation + Vec3D(x,y,z)
     member this.Rotate(r : Vec3D) =
-        // TODO
-        ()
+        rotation <- rotation + r
     member this.SetRotation(r : Vec3D) =
-        // TODO
-        ()
+        rotation <- r
     member this.Scale(x : float, y : float, z : float) =
-        // TODO
-        ()
+        scale <- scale + Vec3D(x,y,z)
     member this.Scale(s : Vec3D) = 
-        // TODO
-        ()
+        scale <- scale + s
     member this.Scale(s : float) =
-        // TODO
-        ()
+        scale <- scale + Vec3D(s,s,s)
 
     // TODO
 
