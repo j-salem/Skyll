@@ -12,6 +12,7 @@ open OpenTK.Graphics.OpenGL
 open OpenTK.Input
 
 open Geometry
+open Math
 
 type Game() =
     /// <summary>Creates a 800x600 window with the specified title.</summary>
