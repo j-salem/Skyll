@@ -12,11 +12,10 @@ type Transform() =
     let mutable position = Vec3D()
     let mutable rotation = Vec3D()
     let mutable scale = Vec3D(1.0, 1.0, 1.0)
-    let mutable translation = Matrix4()
-    let mutable orientation = Matrix4()
-    let mutable scaling = Matrix4()
 
-    let mutable bNeedsUpdate = false
+    let mutable translation = Matrix4() // possibly unnecessary
+    let mutable orientation = Matrix4()
+    let mutable scaling = Matrix4() // possibly unnecessary
 
     // Possibly change so these are derived values
     // taken directly from the affine transform matrix
@@ -26,12 +25,17 @@ type Transform() =
         with get() = rotation 
     member this.GetScale
         with get() = scale
+
     member this.GetTranslation
-        with get() = translation
+        with get() = Matrix4.Translate(position)
     member this.GetOrientation
-        with get() = orientation
+        with get() = 
+            orientation <- Matrix4.Rotate(rotation.X, Vec3D(1.0,0.0,0.0))
+            orientation <- Matrix4.Rotate(orientation, rotation.Y, Vec3D(0.0,1.0,0.0))
+            orientation <- Matrix4.Rotate(orientation, rotation.Z, Vec3D(0.0,0.0,1.0))
+            orientation
     member this.GetScaling
-        with get() = scaling
+        with get() = Matrix4.Scale(scale)
 
     member this.Translate(x : float, y : float, z : float) =
         position <- position + Vec3D(x,y,z)

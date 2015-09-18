@@ -263,7 +263,7 @@ type Matrix4() =
     /// <param name="angle">The angle to rotate by (in degrees)</param>
     /// <param name="axis">The axis on which perform the rotation</param>
     static member Rotate(matrix : Matrix4, angle : float, axis : Vec3D) =
-        Matrix4.Rotate(angle, axis) * matrix
+        Matrix4.Rotate(angle, axis) * matrix :?> Matrix4
 
     /// <summary>
     /// Generates a translation matrix to the given position
