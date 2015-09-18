@@ -16,6 +16,8 @@ type Transform() =
     let mutable orientation = Matrix4()
     let mutable scaling = Matrix4()
 
+    let mutable bNeedsUpdate = false
+
     // Possibly change so these are derived values
     // taken directly from the affine transform matrix
     member this.GetPosition 

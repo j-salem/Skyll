@@ -1,13 +1,17 @@
 ﻿module Math
 
-/// <summary>
+
 /// arbitrary floating point error for assesing equality
-/// </summary>
 let FloatingPointError = 0.0000001
+
+/// Constant for Radian -> Degree conversion
 let RadToDeg = 180.0 / System.Math.PI
+
+/// Constant for Degree -> Radian conversion
 let DegToRad = System.Math.PI / 180.0
 
-// TODO: change internal representation to an array
+
+/// A 2-Dimensional Vector class
 type Vec2D (x : float, y : float) =
     let mutable values = [|x; y|]
     let mag = sqrt(values.[0] * values.[0] + values.[1] * values.[1])
@@ -34,6 +38,7 @@ type Vec2D (x : float, y : float) =
         "{" + this.X.ToString() + ", " + this.Y.ToString() + "}"
     new() = Vec2D(0.0, 0.0)
 
+/// A 3-Dimensional Vector class
 type Vec3D(x : float, y : float, z : float) =
     let mutable values = [|x; y; z|]
     let mag = sqrt(values.[0] * values.[0] + values.[1] * values.[1] + values.[2] * values.[2])
@@ -67,6 +72,7 @@ type Vec3D(x : float, y : float, z : float) =
         "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + "}"
     new() = Vec3D(0.0, 0.0, 0.0)
 
+/// A 4-Dimensional vector class
 type Vec4D(x : float, y : float, z : float, w : float) =
     let mutable values = [|x; y; z; w|]
     let mag = sqrt(values.[0] * values.[0] + values.[1] * values.[1] + values.[2] * values.[2] + values.[3] * values.[3])
@@ -91,6 +97,7 @@ type Vec4D(x : float, y : float, z : float, w : float) =
         "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + ", " + this.W.ToString() + "}"
     new() = Vec4D(0.0, 0.0, 0.0, 0.0)
 
+/// A basic Matrix class with general matrix utilities
 type Matrix(m0 : int, n0 : int) =
     let n, m = n0, m0
     let mutable values = [| for i in 1..m -> [| for j in 1..n -> 0.0 |] |]
@@ -111,18 +118,31 @@ type Matrix(m0 : int, n0 : int) =
             values.[i] <- value
     member this.M with get() : int = m
     member this.N with get() : int = n
+
+    /// <summary>
+    /// Returns the matrix after scalar multiplication by the parameter <c>s</c>
+    /// </summary>
+    /// <param name="s">The multiplier</param>
     member this.ScalarMult(s) =
         let newMat = Matrix(m,n)
         for i = 0 to m - 1 do
             for j = 0 to n - 1 do
                 newMat.[i,j] <- this.[i,j] * s
         newMat
+
+    /// <summary>
+    /// Returns the Transpose of the matrix
+    /// </summary>
     member this.Transpose() =
         let newMat = Matrix(n,m)
         for i = 0 to m - 1 do
             for j = 0 to n - 1 do
                 newMat.[j,i] <- this.[i,j]
         newMat
+
+    /// <summary>
+    /// Returns the trace of the given square matrix
+    /// </summary>
     member this.Trace() =
         assert(m = n) // possibly break this out into a subclass for square matrices
         let mutable trace = 0.0
@@ -155,6 +175,10 @@ type Matrix(m0 : int, n0 : int) =
                     sum <- sum + a.[i,k] * b.[k,j]
                 newMat.[i,j] <- sum
         newMat
+    /// <summary>
+    /// Generates an <c>n</c>x<c>n</c> identity matrix
+    /// </summary>
+    /// <param name="n">The dimension of the identity matrix to generate</param>
     static member Identity(n) =
         let newMat = Matrix(n, n)
         for i = 0 to n - 1 do
@@ -175,10 +199,17 @@ type Matrix(m0 : int, n0 : int) =
 type Matrix3() =
     inherit Matrix(3,3)
 
+    /// <summary>
+    /// Returns the Determinant of the matrix
+    /// </summary>
     member this.Determinant() =
         this.[0,0] * (this.[1,1] * this.[2,2] - this.[1,2] * this.[2,1]) +
         this.[0,1] * - (this.[1,0] * this.[2,2] - this.[1,2] * this.[0,2]) +
         this.[0,2] * (this.[0,1] * this.[1,2] - this.[1,1] * this.[0,2])
+
+    /// <summary>
+    /// Returns the Inverse of the matrix via the Cayley-Hamilton method
+    /// </summary>
     member this.Inverse() =
         let det = this.Determinant()
         assert(det <> 0.0)
@@ -195,12 +226,24 @@ type Matrix3() =
 type Matrix4() =
     inherit Matrix(4,4)
 
+    /// <summary>
+    /// <c>Minor3</c> returns the minor 3x3 matrix
+    /// </summary>
     member this.Minor3() = 
         let newMat = Matrix3()
         for i = 0 to 2 do
             for j = 0 to 2 do
                 newMat.[i,j] <- this.[i,j]
         newMat
+
+    // TODO: implement Inverse 
+
+    /// <summary>
+    /// <c>Rotate</c> generates the rotation matrix about the given axis by the given angle (in deg)
+    /// </summary>
+    /// <param name="angle">The angle (in degrees) by which to rotate</param>
+    /// <param name="axis">The axis on which to perform the rotation</param>
+    // TODO: implement Rotate in place
     static member Rotate(angle : float, axis : Vec3D) =
         let ret = Matrix4()
         let l, m, n = axis.X, axis.Y, axis.Z
@@ -212,37 +255,51 @@ type Matrix4() =
         ret.[2] <- [| l * n * oneMinus - m * sinT; m * n * oneMinus + l * sinT; n * n * oneMinus + cosT; 0.0|]
         ret.[3] <- [| 0.0; 0.0; 0.0; 1.0|]
         ret
+
+    /// <summary>
+    /// <c>Rotate</c> returns a rotated version of the given matrix using the axis and angle given
+    /// </summary>
+    /// <param name="matrix">The matrix to rotate</param>
+    /// <param name="angle">The angle to rotate by (in degrees)</param>
+    /// <param name="axis">The axis on which perform the rotation</param>
     static member Rotate(matrix : Matrix4, angle : float, axis : Vec3D) =
         Matrix4.Rotate(angle, axis) * matrix
-        
 
-// Redundant, will probably delete
+    /// <summary>
+    /// Generates a translation matrix to the given position
+    /// </summary>
+    /// <param name="pos">The position to translate to</param>
+    static member Translate(pos : Vec3D) : Matrix4 =
+        let ret = Matrix.Identity(4) :?> Matrix4
+        ret.[0,3] <- pos.X
+        ret.[1,3] <- pos.Y
+        ret.[2,3] <- pos.Z
+        ret
 
-//type Point2D(x0 : float, y0 : float) =
-//    let mutable x, y = x0, y0
-//    member this.X with get() = x and set xVal = x <- xVal
-//    member this.Y with get() = y and set yVal = y <- yVal
-//    member this.Move(a : Vec2D) =
-//        Point2D(this.X + a.X, this.Y + a.Y)
-//    member this.VectorFrom(a : Point2D) = 
-//        Vec2D(this.X - a.X, this.Y - a.Y)
-//    member this.VectorTo(a : Point2D) =
-//        Vec2D(a.X - this.X, a.Y - this.Y)
-//    override this.ToString() =
-//        "{" + this.X.ToString() + ", " + this.Y.ToString() + "}"
-//    new() = Point2D(0.0, 0.0)
-//
-//type Point3D(x0 : float, y0 : float, z0 : float) =
-//    let mutable x, y, z = x0, y0, z0
-//    member this.X with get() = x and set xVal = x <- xVal
-//    member this.Y with get() = y and set yVal = y <- yVal
-//    member this.Z with get() = z and set zVal = z <- zVal
-//    member this.Move(a : Vec3D) =
-//        Point3D(this.X + a.X, this.Y + a.Y, this.Z + a.Z)
-//    member this.VectorFrom(a : Point3D) = 
-//        Vec3D(this.X - a.X, this.Y - a.Y, this.Z - a.Z)
-//    member this.VectorTo(a : Point3D) =
-//        Vec3D(a.X - this.X, a.Y - this.Y, a.Z - this.Z)
-//    override this.ToString() =
-//        "{" + this.X.ToString() + ", " + this.Y.ToString() + ", " + this.Z.ToString() + "}"
-//    new() = Point3D(0.0, 0.0, 0.0)
+    /// <summary>
+    /// Returns the given matrix translated to the given position
+    /// </summary>
+    /// <param name="matrix">The matrix to translate</param>
+    /// <param name="pos">The params to translate by</param>
+    static member Translate(matrix : Matrix4, pos : Vec3D) =
+        matrix * Matrix4.Translate(pos)
+
+    /// <summary>
+    /// Generates a Scaling transformation matrix
+    /// </summary>
+    /// <param name="s">Vector containing scale in each dimension</param>
+    static member Scale(s : Vec3D) = 
+        let ret = Matrix4()
+        ret.[0,0] <- s.X
+        ret.[1,1] <- s.Y
+        ret.[2,2] <- s.Z
+        ret.[3,3] <- 1.0
+        ret
+
+    /// <summary>
+    /// Scale the given matrix by the given vector
+    /// </summary>
+    /// <param name="matrix">The matrix to scale</param>
+    /// <param name="s">Params used to generate Scale transform</param>
+    static member Scale(matrix : Matrix4, s : Vec3D) =
+        matrix * Matrix4.Scale(s)
