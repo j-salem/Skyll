@@ -1,6 +1,5 @@
 ﻿module Math
 
-
 /// arbitrary floating point error for assesing equality
 let FloatingPointError = 0.0000001
 

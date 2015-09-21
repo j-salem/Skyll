@@ -13,6 +13,10 @@ type Transform() =
     let mutable rotation = Vec3D()
     let mutable scale = Vec3D(1.0, 1.0, 1.0)
 
+    // Up is Y Axis
+    let mutable up = Vec3D(0.0, 1.0, 0.0)
+    let mutable forward = Vec3D(1.0, 0.0, 0.0)
+
     let mutable translation = Matrix4() // possibly unnecessary
     let mutable orientation = Matrix4()
     let mutable scaling = Matrix4() // possibly unnecessary
@@ -56,6 +60,13 @@ type Transform() =
     member this.Scale(s : float) =
         scale <- scale + Vec3D(s,s,s)
 
+//    member this.LookAt(targetPos : Vec3D) = 
+//        if targetPos - position = 0 
+//        then ()
+//        else
+//            let dir = (targetPos - position).Normalized()
+//            let rotX = asin(-dir.Y) * RadToDeg
+//            let rotY = -atan()
     // TODO
 
 // TODO: abstract a little further and add a List<Vec2D> for storing all the vertices of the shape
